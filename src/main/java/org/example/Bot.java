@@ -4,11 +4,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,15 +31,55 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+
+            Message message = update.getMessage();
             long idFromUser = update.getMessage().getFrom().getId();
             String text = update.getMessage().getText();
+            IDB dataBase = DataBase.getInstance();
+            Long chattID = message.getChatId();
 
-            if (text.equalsIgnoreCase("restart")) {
+            if (text.equalsIgnoreCase("/restart")) {
                 setUserState(idFromUser, new ActionBot.StartState());
-                sendText(idFromUser, "\uD83E\uDEE1 Переворот Погоды выполнен! \uD83E\uDEE1 \n Введи что угодно, чтобы я обновился \uD83E\uDEE8");
+                sendText(idFromUser, "\uD83E\uDEE1 Перезапуск выполнен! Введи что угодно, чтобы я обновился \uD83E\uDEE8");
                 return;
             }
-
+            if (text.equalsIgnoreCase("console")) {
+                String consoleMessage = "🛠 *Секретные консольные команды бота* 🛠\n\n" +
+                        "1. `/load` - *Загрузить данные* из базы данных и отобразить их в чате.\n" +
+                        "2. `/delete` - *Удалить все данные* из базы данных. Будьте осторожны!\n" +
+                        "3. `/update <старое слово> <новое слово>` - *Обновить запись* в базе данных. Заменяет старое слово на новое.\n" +
+                        "4. `/restart` - *Перезапустить бота*. Сброс всех состояний пользователя.\n\n" +
+                        "💡 Просто введите нужную команду, чтобы воспользоваться одной из этих функций!";
+                sendText(chattID, consoleMessage);
+                return;
+            }
+            if (text.equalsIgnoreCase("/load")) {
+                ArrayList<String> data = dataBase.loadData();
+                String mgss = "";
+                for (int i = 0; i < data.size(); i++) {
+                    mgss += data.get(i) + "\n";
+                }
+                sendText(chattID, mgss);
+                return;
+            }
+            if (text.equalsIgnoreCase("/delete")) {
+                dataBase.deleteData();
+                sendText(chattID, "Данные удалены,\n База Данных пуста");
+                return;
+            }
+            if (text.startsWith("/update ")) {
+                String[] parts = text.split(" ", 3);
+                if (parts.length == 3) {
+                    String oldWord = parts[1];
+                    String newWord = parts[2];
+                    dataBase.updateData(oldWord, newWord);
+                    sendText(chattID, "Данные успешно обновлены: '" + oldWord + "' заменено на '" + newWord + "'");
+                } else {
+                    sendText(chattID, "Ошибка: Неверный формат команды. Используйте: update <старое слово> <новое слово>");
+                }
+                return;
+            }
+            dataBase.saveData(text);
             User state = userStates.getOrDefault(idFromUser, new ActionBot.StartState());
             System.out.println("Current State: " + state.getClass().getSimpleName());
             state.handle(this, update);
@@ -51,6 +93,10 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void sendText(Long who, String what) {
+        if (what == null || what.trim().isEmpty()) {
+            System.out.println("Error: Attempted to send an empty message");
+            return;
+        }
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString())
                 .text(what)
@@ -62,6 +108,7 @@ public class Bot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
 
     public String getWeather(String city) {
         switch (city.toLowerCase()) {
