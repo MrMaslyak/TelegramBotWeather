@@ -1,9 +1,11 @@
-package org.example;
+package org.example.DB;
+
+import org.example.Interface.IDB;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class DataBaseAnswers implements IDB{
+public class DataBaseAnswers implements IDB {
     private static final  String fileNameAK = "databaseAnswerKey.txt";
     private static DataBaseAnswers instance;
 
@@ -58,16 +60,12 @@ public class DataBaseAnswers implements IDB{
     public void updateData(String oldWord, String newWord) {
 
         ArrayList<String> list = loadData();
-
-
         ArrayList<String> updatedList = new ArrayList<>();
-
 
         for (String line : list) {
             String updatedLine = line.replace(oldWord, newWord);
             updatedList.add(updatedLine);
         }
-
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileNameAK, false))) {
             for (String line : updatedList) {
@@ -78,5 +76,6 @@ public class DataBaseAnswers implements IDB{
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
         }
+
     }
 }

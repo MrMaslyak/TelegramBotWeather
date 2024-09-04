@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.Interface.User;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class ActionBot {

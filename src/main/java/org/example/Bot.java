@@ -1,5 +1,9 @@
 package org.example;
 
+import org.example.DB.DataBase;
+import org.example.DB.DataBaseAnswers;
+import org.example.Interface.IDB;
+import org.example.Interface.User;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

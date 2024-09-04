@@ -1,9 +1,11 @@
-package org.example;
+package org.example.DB;
+
+import org.example.Interface.IDB;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class DataBase implements IDB{
+public class DataBase implements IDB {
     private static final String fileName = "databaseUserText.txt";
     private static DataBase instance;
 
