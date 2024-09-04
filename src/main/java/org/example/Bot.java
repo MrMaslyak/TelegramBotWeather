@@ -34,62 +34,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-
-            Message message = update.getMessage();
-            long idFromUser = update.getMessage().getFrom().getId();
-            String text = update.getMessage().getText();
-            IDB dataBase = DataBase.getInstance();
-            Long chattID = message.getChatId();
-
-            if (text.equalsIgnoreCase("/restart")) {
-                setUserState(idFromUser, new ActionBot.StartState());
-                sendText(idFromUser, "\uD83E\uDEE1 Перезапуск выполнен! Введи что угодно, чтобы я обновился \uD83E\uDEE8");
-                return;
-            }
-            if (text.equalsIgnoreCase("console")) {
-                String consoleMessage = "🛠 *Секретные консольные команды бота* 🛠\n\n" +
-                        "1. `/load` - *Загрузить данные* из базы данных и отобразить их в чате.\n" +
-                        "2. `/delete` - *Удалить все данные* из базы данных. Будьте осторожны!\n" +
-                        "3. `/update <старое слово> <новое слово>` - *Обновить запись* в базе данных. Заменяет старое слово на новое.\n" +
-                        "4. `/restart` - *Перезапустить бота*. Сброс всех состояний пользователя.\n\n" +
-                        "💡 Просто введите нужную команду, чтобы воспользоваться одной из этих функций!";
-                sendText(chattID, consoleMessage);
-                return;
-            }
-            if (text.equalsIgnoreCase("/load")) {
-                ArrayList<String> data = dataBase.loadData();
-                String mgss = "";
-                for (int i = 0; i < data.size(); i++) {
-                    mgss += data.get(i) + "\n";
-                }
-                sendText(chattID, mgss);
-                return;
-            }
-            if (text.equalsIgnoreCase("/delete")) {
-                dataBase.deleteData();
-                sendText(chattID, "Данные удалены,\n База Данных пуста");
-                return;
-            }
-            if (text.startsWith("/update ")) {
-                String[] parts = text.split(" ", 3);
-                if (parts.length == 3) {
-                    String oldWord = parts[1];
-                    String newWord = parts[2];
-                    dataBase.updateData(oldWord, newWord);
-                    sendText(chattID, "Данные успешно обновлены: '" + oldWord + "' заменено на '" + newWord + "'");
-                } else {
-                    sendText(chattID, "Ошибка: Неверный формат команды. Используйте: update <старое слово> <новое слово>");
-                }
-                return;
-            }
-            dataBase.saveData(text);
-            User state = userStates.getOrDefault(idFromUser, new ActionBot.StartState());
-            System.out.println("Current State: " + state.getClass().getSimpleName());
-            state.handle(this, update);
-        } else {
-            System.out.println("No message or text found in update");
-        }
+        getTextUserEquals(update);
     }
 
     public void setUserState(long userId, User state) {
@@ -234,6 +179,106 @@ public class Bot extends TelegramLongPollingBot {
                 }
             default:
                 return "Извини, я пока не знаю, какая погода в этом городе.";
+        }
+    }
+
+    private void getTextUserEquals(Update update){
+        if (update.hasMessage() && update.getMessage().hasText()) {
+
+            Message message = update.getMessage();
+            long idFromUser = update.getMessage().getFrom().getId();
+            String text = update.getMessage().getText();
+            IDB dataBase = DataBase.getInstance();
+            IDB dataBaseAns = DataBaseAnswers.getInstance();
+            Long chattID = message.getChatId();
+
+            if (text.equalsIgnoreCase("/restart")) {
+                setUserState(idFromUser, new ActionBot.StartState());
+                sendText(idFromUser, "\uD83E\uDEE1 Перезапуск выполнен! Введи что угодно, чтобы я обновился \uD83E\uDEE8");
+                return;
+            }
+            if (text.equalsIgnoreCase("console")) {
+                String consoleMessage = "🛠 *Секретные консольные команды бота* 🛠\n\n" +
+                        "1. `/load` - *Загрузить данные* из базы данных и отобразить их в чате.\n" +
+                        "2. `/delete` - *Удалить все данные* из базы данных. Будьте осторожны!\n" +
+                        "3. `/update <старое слово> <новое слово>` - *Обновить запись* в базе данных. Заменяет старое слово на новое.\n" +
+                        "4. `/restart` - *Перезапустить бота*. Сброс всех состояний пользователя.\n\n" +
+                        "💡 Просто введите нужную команду, чтобы воспользоваться одной из этих функций!";
+                sendText(chattID, consoleMessage);
+                return;
+            }
+            if (text.equalsIgnoreCase("secret-console")) {
+                String consoleMessage = "🛠*Супер секретные консольные команды бота* 🛠\n\n" +
+                        "🛠*Консольные команды связанные с базой данной ответов бота* 🛠\n\n"+
+                        "1. `/loadA` - *Загрузить данные* из базы данных и отобразить их в чате.\n" +
+                        "2. `/deleteA` - *Удалить все данные* из базы данных. Будьте осторожны!\n" +
+                        "3. `/updateA <старое слово> <новое слово>` - *Обновить запись* в базе данных. Заменяет старое слово на новое.\n" +
+                        "4. `/restart` - *Перезапустить бота*. Сброс всех состояний пользователя.\n\n" +
+                        "💡 Просто введите нужную команду, чтобы воспользоваться одной из этих функций!";
+                sendText(chattID, consoleMessage);
+                return;
+            }
+            if (text.equalsIgnoreCase("/load")) {
+                ArrayList<String> data = dataBase.loadData();
+                String mgss = "";
+                for (int i = 0; i < data.size(); i++) {
+                    mgss += data.get(i) + "\n";
+                }
+                sendText(chattID, mgss);
+                return;
+            }
+            if (text.equalsIgnoreCase("/loadA")) {
+                ArrayList<String> data = dataBaseAns.loadData();
+                String mgss = "";
+
+                    for (int i = 0; i < data.size(); i++) {
+                        mgss += data.get(i) + "\n";
+                    }
+                    sendText(chattID, mgss);
+
+
+                return;
+            }
+            if (text.equalsIgnoreCase("/delete")) {
+                dataBase.deleteData();
+                sendText(chattID, "Данные удалены,\n База Данных пуста");
+                return;
+            }
+            if (text.equalsIgnoreCase("/deleteA")) {
+                dataBaseAns.deleteData();
+                sendText(chattID, "Данные удалены,\n База Данных пуста");
+                return;
+            }
+            if (text.startsWith("/update ")) {
+                String[] parts = text.split(" ", 3);
+                if (parts.length == 3) {
+                    String oldWord = parts[1];
+                    String newWord = parts[2];
+                    dataBase.updateData(oldWord, newWord);
+                    sendText(chattID, "Данные успешно обновлены: '" + oldWord + "' заменено на '" + newWord + "'");
+                } else {
+                    sendText(chattID, "Ошибка: Неверный формат команды. Используйте: update <старое слово> <новое слово>");
+                }
+                return;
+            }
+            if (text.startsWith("/updateA ")) {
+                String[] parts = text.split(" ", 3);
+                if (parts.length == 3) {
+                    String oldWord = parts[1];
+                    String newWord = parts[2];
+                    dataBaseAns.updateData(oldWord, newWord);
+                    sendText(chattID, "Данные успешно обновлены: '" + oldWord + "' заменено на '" + newWord + "'");
+                } else {
+                    sendText(chattID, "Ошибка: Неверный формат команды. Используйте: update <старое слово> <новое слово>");
+                }
+                return;
+            }
+            dataBase.saveData(text);
+            User state = userStates.getOrDefault(idFromUser, new ActionBot.StartState());
+            System.out.println("Current State: " + state.getClass().getSimpleName());
+            state.handle(this, update);
+        } else {
+            System.out.println("No message or text found in update");
         }
     }
 }
