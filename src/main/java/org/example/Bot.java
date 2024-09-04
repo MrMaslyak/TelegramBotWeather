@@ -110,7 +110,10 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    public String getWeather(String city) {
+    public String getWeather(String city, Update update) {
+        Message message = update.getMessage();
+        IDB dataBaseAnswer = DataBaseAnswers.getInstance();
+        Long chattID = message.getChatId();
         switch (city.toLowerCase()) {
             case "шанхай":
             case "1":
@@ -129,6 +132,7 @@ public class Bot extends TelegramLongPollingBot {
                         String temperatureNumber = temperatureText.replaceAll("[^\\d]", "");
                         if (!temperatureNumber.isEmpty()) {
                             int temperature = Integer.parseInt(temperatureNumber);
+                            dataBaseAnswer.saveData("В Шанхае сейчас " + temperature + "°C, Погода: " + description);
                             return "В Шанхае сейчас " + temperature + "°C, Погода: " + description;
                         } else {
                             return "Не удалось получить данные о температуре";
@@ -156,6 +160,7 @@ public class Bot extends TelegramLongPollingBot {
                         String temperatureNumber = temperatureText.replaceAll("[^\\d]", "");
                         if (!temperatureNumber.isEmpty()) {
                             int temperature = Integer.parseInt(temperatureNumber);
+                            dataBaseAnswer.saveData("В Днепре сейчас " + temperature + "°C, Погода: " + description);
                             return "В Днепре сейчас " + temperature + "°C, Погода: " + description;
                         } else {
                             return "Не удалось получить данные о температуре";
@@ -183,6 +188,7 @@ public class Bot extends TelegramLongPollingBot {
                         String temperatureNumber = temperatureText.replaceAll("[^\\d]", "");
                         if (!temperatureNumber.isEmpty()) {
                             int temperature = Integer.parseInt(temperatureNumber);
+                            dataBaseAnswer.saveData( "В Нью-Йорке сейчас " + temperature + "°C, Погода: " + description);
                             return "В Нью-Йорке сейчас " + temperature + "°C, Погода: " + description;
                         } else {
                             return "Не удалось получить данные о температуре";
@@ -210,6 +216,7 @@ public class Bot extends TelegramLongPollingBot {
                         String temperatureNumber = temperatureText.replaceAll("[^\\d]", "");
                         if (!temperatureNumber.isEmpty()) {
                             int temperature = Integer.parseInt(temperatureNumber);
+                            dataBaseAnswer.saveData("В Дубае сейчас " + temperature + "°C, Погода: " + description);
                             return "В Дубае сейчас " + temperature + "°C, Погода: " + description;
                         } else {
                             return "Не удалось получить данные о температуре";

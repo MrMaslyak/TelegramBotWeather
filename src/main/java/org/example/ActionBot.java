@@ -45,7 +45,7 @@ public class ActionBot {
             if (textUser.equalsIgnoreCase("Шанхай") || textUser.equalsIgnoreCase("Днепр") || textUser.equalsIgnoreCase("Нью-Йорк") || textUser.equalsIgnoreCase("Дубай")
                     || textUser.equals("1") || textUser.equals("2") || textUser.equals("3") || textUser.equals("4")) {
                 bot.sendText(userId, "\uD83D\uDE3D Молодец! Ты правильно ввел название или нумерацию города \uD83D\uDE3D");
-                String weather = bot.getWeather(textUser);
+                String weather = bot.getWeather(textUser, update);
                 bot.sendText(userId,  weather);
                 if (weather == null) {
                     bot.sendText(userId, "Извини, я не знаю, какая погода в этом городе.");
